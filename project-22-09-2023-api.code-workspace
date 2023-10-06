@@ -11,6 +11,15 @@
 		},
 		{
 			"path": "./src/apps/"
+		},
+		{
+			"path": "./src/apps/users/"
+		},
+		{
+			"path": "./src/apps/organizations/"
+		},
+		{
+			"path": "./src/apps/proto_actions/"
 		}
 	],
 	"settings": {}
