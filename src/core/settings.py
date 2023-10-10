@@ -10,7 +10,8 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = [
-    'https://preview.hoolisoftware.xyz'
+    'https://admin.savewithsports.xyz',
+    'http://localhost:8000'
 ]
 
 INSTALLED_APPS = [
