@@ -1,49 +1,84 @@
 from rest_framework import viewsets
 from django.core.exceptions import PermissionDenied
 
-
 from .. import models
-from . import serializers
+from . import action_serializer_classes
+from . import querysets
 
 
-class UserOrganizationViewSet(viewsets.ModelViewSet):
-    action_serializer_classes = {
-        'create': serializers.UserOrganizationCreateSerializer,
-        'update': serializers.UserOrganizationRUDSerializer,
-        'partial_update': serializers.UserOrganizationRUDSerializer,
-        'retrieve': serializers.UserOrganizationRUDSerializer,
-        'list': serializers.UserOrganizationListSerializer,
-        'metadata': serializers.UserOrganizationRUDSerializer
-    }
-
-    def get_queryset(self):
-        return self.request.user.organizations.all()
-
-    def get_serializer_context(self):
-        return {'request': self.request}
-
-    def get_serializer_class(self):
-        return self.action_serializer_classes[self.action]
+viewset_http_method_names = [m for m in viewsets.ModelViewSet.http_method_names if m not in ['delete']] # noqa
 
 
-class UserBranchViewSet(viewsets.ModelViewSet):
-    action_serializer_classes = {
-        'create': serializers.UserBranchCreateSerializer,
-        'update': serializers.UserBranchRUDSerializer,
-        'partial_update': serializers.UserBranchRUDSerializer,
-        'retrieve': serializers.UserBranchRUDSerializer,
-        'list': serializers.UserBranchListSerializer,
-        'metadata': serializers.UserBranchRUDSerializer
-    }
+class OrganizationViewSet(viewsets.ModelViewSet): # noqa
+    http_method_names = viewset_http_method_names
+    model = models.Organization
+    action_serializer_classes = action_serializer_classes.organization
+
+    def destroy(self, request, pk=None):
+        pass
 
     def get_queryset(self):
-        return models.Branch.objects.filter(organization__owner=self.request.user) # noqa
+        return querysets.get_organizations(self.request.user)
 
     def get_serializer_context(self):
         return {'request': self.request}
 
     def get_serializer_class(self):
         try:
-            return self.action_serializer_classes[self.action]
-        except AttributeError:
+            return self.action_serializer_classes[self.action][self.request.user.role] # noqa
+        except KeyError:
             raise PermissionDenied()
+
+
+class BranchViewSet(viewsets.ModelViewSet):
+    http_method_names = viewset_http_method_names
+    model = models.Branch
+    action_serializer_classes = action_serializer_classes.branch
+
+    def get_queryset(self):
+        return querysets.get_branches(self.request.user)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer_class(self):
+        try:
+            return self.action_serializer_classes[self.action][self.request.user.role] # noqa
+        except KeyError:
+            raise PermissionDenied()
+
+
+class OfferViewSet(viewsets.ModelViewSet):
+    http_method_names = viewset_http_method_names
+    model = models.Offer
+    action_serializer_classes = action_serializer_classes.offer
+
+    def get_queryset(self):
+        return querysets.get_offers(self.request.user)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer_class(self):
+        try:
+            return self.action_serializer_classes[self.action][self.request.user.role] # noqa
+        except KeyError:
+            raise PermissionDenied()
+
+
+class BetViewSet(viewsets.ModelViewSet):
+    http_method_names = viewset_http_method_names
+    model = models.Bet
+    action_serializer_classes = action_serializer_classes.bet
+
+    def get_queryset(self):
+        return querysets.get_bets((self.request.user))
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer_class(self):
+        try:
+            return self.action_serializer_classes[self.action][self.request.user.role] # noqa
+        except KeyError:
+            raise PermissionDenied(())

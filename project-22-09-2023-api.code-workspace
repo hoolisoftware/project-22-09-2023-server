@@ -19,7 +19,7 @@
 			"path": "./src/apps/organizations/"
 		},
 		{
-			"path": "./src/apps/proto_actions/"
+			"path": "./src/apps/actions/"
 		}
 	],
 	"settings": {}

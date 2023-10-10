@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-
 from . import models
 
 
@@ -9,7 +8,8 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'owner',
-        'id'
+        'id',
+        'created'
     )
 
 
@@ -18,5 +18,28 @@ class BranchAdmin(admin.ModelAdmin):
     list_display = (
         'organization',
         'address',
-        'id'
+        'id',
+        'created'
+    )
+
+
+@admin.register(models.Offer)
+class OfferAdmin(admin.ModelAdmin):
+    list_display = (
+        'organization',
+        'team_a',
+        'team_b',
+        'action_id',
+        'created'
+    )
+
+
+@admin.register(models.Bet)
+class BetAdmin(admin.ModelAdmin):
+    list_display = (
+        'organization',
+        'branch',
+        'table_number',
+        'bet',
+        'created'
     )
