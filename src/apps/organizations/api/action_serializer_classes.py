@@ -8,93 +8,123 @@ def get_action_serializer_classes(
     action_serializer_classes = {}
     actions = ('list', 'create', 'update', 'partial_update', 'retrieve', 'metadata') # noqa
 
-    for action in actions:
-        action_serializer_classes[action] = {}
+    for role in [i[0] for i in ROLES]:
+        action_serializer_classes[role] = {}
 
-        for role in ROLES:
-            if not (action in _serializers[role[0]][1]):
-                action_serializer_classes[action][role[0]] = _serializers[role[0]][0] # noqa
+        for action in actions:
+            if action in _serializers[role]['special'].keys():
+                action_serializer_classes[role][action] = _serializers[role]['special'][action] # noqa
+            elif action in _serializers[role]['actions']:
+                action_serializer_classes[role][action] = _serializers[role]['default'] # noqa
             else:
-                action_serializer_classes[action][role[0]] = serializers.EmptySerializer # noqa
+                action_serializer_classes[role][action] = serializers.EmptySerializer # noqa
 
     return action_serializer_classes
 
 
 organization = get_action_serializer_classes({
-    'superadmin': [
-        serializers.SAdminOrganizationCRUDSerializer,
-        []
-    ],
-    'organization_admin': [
-        serializers.OAdminOrganizationCRUDSerializer,
-        ['create']
-    ],
-    'branch_admin': [
-        serializers.BAdminOrganizationRSerializer,
-        [],
-    ],
-    'staff': [
-        serializers.StaffOrganizationRSerializer,
-        []
-    ]
+    'superadmin': {
+        'default': serializers.SAdminOrganizationCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'organization_admin': {
+        'default': serializers.OAdminOrganizationCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'update', 'partial_update', 'retrieve', 'metadata']
+    },
+    'branch_admin': {
+        'default': serializers.BAdminOrganizationCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'retrieve', 'metadata']
+    },
+    'staff': {
+        'default': serializers.StaffOrganizationCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'retrieve', 'metadata']
+    }
 })
 
 
 branch = get_action_serializer_classes({
-    'superadmin': [
-        serializers.SAdminBranchCRUDSerializer,
-        []
-    ],
-    'organization_admin': [
-        serializers.OAdminBranchCRUDSerializer,
-        []
-    ],
-    'branch_admin': [
-        serializers.BAdminBranchRUSerializer,
-        ['create']
-    ],
-    'staff': [
-        serializers.StaffBranchRSerializer,
-        []
-    ]
+    'superadmin': {
+        'default': serializers.SAdminBranchCRUDSerializer,
+        'special': {
+            'list': serializers.SAdminBranchRSerializer,
+            'retrieve': serializers.SAdminBranchRSerializer
+        },
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'organization_admin': {
+        'default': serializers.OAdminBranchCRUDSerializer,
+        'special': {
+            'list': serializers.SAdminBranchRSerializer,
+            'retrieve': serializers.SAdminBranchRSerializer
+        },
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'branch_admin': {
+        'default': serializers.BAdminBranchCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'update', 'partial_update', 'retrieve', 'metadata']
+    },
+    'staff': {
+        'default': serializers.StaffBranchCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'retrieve', 'metadata']
+    }
 })
 
 
 offer = get_action_serializer_classes({
-    'superadmin': [
-        serializers.SAdminOfferCRUDSerializer,
-        []
-    ],
-    'organization_admin': [
-        serializers.OAdminOfferCRUDSerializer,
-        []
-    ],
-    'branch_admin': [
-        serializers.BAdminOfferRSerializer,
-        []
-    ],
-    'staff': [
-        serializers.StaffOfferRSerializer,
-        []
-    ]
+    'superadmin': {
+        'default': serializers.SAdminOfferCRUDSerializer,
+        'special': {
+            'list': serializers.SAdminOfferRSerializer,
+            'retrieve': serializers.SAdminOfferRSerializer
+        },
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'organization_admin': {
+        'default': serializers.OAdminOfferCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'branch_admin': {
+        'default': serializers.BAdminOfferCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'update', 'partial_update', 'retrieve', 'metadata']
+    },
+    'staff': {
+        'default': serializers.StaffOfferCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'retrieve', 'metadata']
+    }
 })
 
 
 bet = get_action_serializer_classes({
-    'superadmin': [
-        serializers.SAdminBetCRUDSerializer,
-        []
-    ],
-    'organization_admin': [
-        serializers.OAdminBetCRUDSerializer,
-        []
-    ],
-    'branch_admin': [
-        serializers.BAdminBetRUSerializer,
-        []
-    ],
-    'staff': [
-        serializers.StaffBetRUSerializer,
-        ['create']
-    ]
+    'superadmin': {
+        'default': serializers.SAdminBetCRUDSerializer,
+        'special': {
+            'list': serializers.SAdminBetRSerializer,
+            'retrieve': serializers.SAdminBetRSerializer
+        },
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'organization_admin': {
+        'default': serializers.OAdminBetCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'branch_admin': {
+        'default': serializers.BAdminBetCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'create', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    },
+    'staff': {
+        'default': serializers.StaffBetCRUDSerializer,
+        'special': {},
+        'actions': ['list', 'update', 'partial_update', 'retrieve', 'metadata'] # noqa
+    }
 })

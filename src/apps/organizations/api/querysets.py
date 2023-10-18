@@ -14,6 +14,7 @@ def get_organizations(
         'organization_admin': Organization.objects.filter(owner=user),
         'branch_admin': Organization.objects.filter(branches__administrators=user), # noqa
         'staff': Organization.objects.filter(branches__staff=user), # noqa
+        '': Organization.objects.none()
     }[user.role]
 
 
@@ -24,7 +25,8 @@ def get_branches(
         'superadmin': Branch.objects.all(),
         'organization_admin': Branch.objects.filter(organization__owner=user), # noqa
         'branch_admin': user.controlled_branches.all(),
-        'staff': user.staff_branches.all()
+        'staff': user.staff_branches.all(),
+        '': Branch.objects.none()
 
     }[user.role]
 
@@ -36,7 +38,8 @@ def get_offers(
         'superadmin': Offer.objects.all(),
         'organization_admin': Offer.objects.filter(organization__owner=user), # noqa
         'branch_admin': Offer.objects.filter(organization__branches__in=user.controlled_branches.all()).all(), # noqa
-        'staff': Offer.objects.filter(organization__branches__in=user.staff_branches.all()).all() # noqa
+        'staff': Offer.objects.filter(organization__branches__in=user.staff_branches.all()).all(), # noqa
+        '': Offer.objects.none()
     }[user.role]
 
 
@@ -47,5 +50,6 @@ def get_bets(
         'superadmin': Bet.objects.all(),
         'organization_admin': Bet.objects.filter(branch__organization__owner=user), # noqa
         'branch_admin': Bet.objects.filter(branch__administrators=user),
-        'staff': Bet.objects.filter(branch__staff=user)
+        'staff': Bet.objects.filter(branch__staff=user),
+        '': Bet.objects.none()
     }[user.role]
